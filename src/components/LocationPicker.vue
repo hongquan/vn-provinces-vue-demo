@@ -29,7 +29,7 @@
         v-model.trim='districtSearch'
         placeholder='Huyện...'
         @focus='startSearchingDistrict'
-        @input.debounce='searchDistrictOnTyping'
+        @keyup='searchDistrictOnTyping'
       />
 
       <div
@@ -78,6 +78,8 @@ import { defineComponent, ref } from 'vue'
 import ky from 'ky'
 import { array, mask } from 'superstruct'
 import { mixin as VueClickAway } from 'vue3-click-away'
+import { debounce } from 'ts-debounce'
+
 import { Base, Ward, WardSchema, District, DistrictShema, Province, ProvinceSchema } from '../structs'
 
 const BASE_API_URL = 'https://provinces.open-api.vn/api'
@@ -125,6 +127,26 @@ export default defineComponent({
     const wardListShown = ref(false)
     const filteredWards = ref<Ward[]>([])
     const selectedWard = ref<Ward | null>(null)
+
+    /* I prefer define component methods in Options API style,
+     * but sometimes it is only possible with Compsition API
+     */
+    const searchDistrict = async (term: string, provinceCode: number) => {
+      if (selectedDistrict.value && selectedDistrict.value.name === term) {
+        return
+      }
+      const rdata = await ky.get(`${BASE_API_URL}/d/search/`, {
+        searchParams: { q: markRequireAll(term), p: provinceCode }
+      }).json()
+      filteredDistricts.value = mask(rdata, array(DistrictShema))
+    }
+    const searchDistrictOnTyping = debounce(async () => {
+      const term = districtSearch.value.trim()
+      if (!term || !selectedProvince.value) {
+        return
+      }
+      await searchDistrict(term, selectedProvince.value.code)
+    }, 300)
     return {
       provinceSearch,
       provinceListShown,
@@ -138,6 +160,9 @@ export default defineComponent({
       wardListShown,
       filteredWards,
       selectedWard,
+      // Methods
+      searchDistrict,
+      searchDistrictOnTyping,
     }
   },
   mixins: [VueClickAway],
@@ -194,16 +219,6 @@ export default defineComponent({
       this.filteredProvinces = mask(rdata, array(ProvinceSchema))
     },
 
-    async searchDistrict(term: string, provinceCode: number) {
-      if (this.selectedDistrict && this.selectedDistrict.name === term) {
-        return
-      }
-      const rdata = await ky.get(`${BASE_API_URL}/d/search/`, {
-        searchParams: { q: markRequireAll(term), p: provinceCode }
-      }).json()
-      this.filteredDistricts = mask(rdata, array(DistrictShema))
-    },
-
     async searchWard(term: string, districtCode: number) {
       if (this.selectedWard && this.selectedWard.name === term) {
         return
@@ -225,13 +240,6 @@ export default defineComponent({
         return
       }
       await this.fetchDistricts(this.selectedProvince.code)
-    },
-    async searchDistrictOnTyping() {
-      const term = this.districtSearch.trim()
-      if (!term || !this.selectedProvince) {
-        return
-      }
-      await this.searchDistrict(term, this.selectedProvince.code)
     },
     async startSearchingWard() {
       this.wardListShown = true

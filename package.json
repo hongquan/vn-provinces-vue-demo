@@ -10,6 +10,7 @@
   "dependencies": {
     "ky": "^0.28.6",
     "superstruct": "^0.15.3",
+    "ts-debounce": "^3.0.0",
     "vue": "^3.2.16",
     "vue3-click-away": "^1.2.1"
   },
