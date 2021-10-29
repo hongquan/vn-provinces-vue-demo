@@ -80,6 +80,8 @@ import { array, mask } from 'superstruct'
 import { mixin as VueClickAway } from 'vue3-click-away'
 import { Base, Ward, WardSchema, District, DistrictShema, Province, ProvinceSchema } from '../structs'
 
+const BASE_API_URL = 'https://provinces.open-api.vn/api'
+
 /*
 * The Lunr engine consider each keyword optional, but in the context of
 * this demo, we want all keywords to be present.
@@ -169,16 +171,16 @@ export default defineComponent({
       this.wardListShown = false
     },
     async fetchProvinces() {
-      const rdata = await ky.get('https://provinces.open-api.vn/api/p/').json()
+      const rdata = await ky.get(`${BASE_API_URL}/p/`).json()
       this.filteredProvinces = mask(rdata, array(ProvinceSchema))
     },
     async fetchDistricts(provinceCode: number) {
-      const rdata = await ky.get(`https://provinces.open-api.vn/api/p/${provinceCode}`, { searchParams: { depth: 2 } }).json()
+      const rdata = await ky.get(`${BASE_API_URL}/p/${provinceCode}`, { searchParams: { depth: 2 } }).json()
       const province = mask(rdata, ProvinceSchema)
       this.filteredDistricts = province.districts
     },
     async fetchWards(districtCode: number) {
-      const rdata = await ky.get(`https://provinces.open-api.vn/api/d/${districtCode}`, { searchParams: { depth: 2 } }).json()
+      const rdata = await ky.get(`${BASE_API_URL}/d/${districtCode}`, { searchParams: { depth: 2 } }).json()
       const district = mask(rdata, DistrictShema)
       this.filteredWards = district.wards
     },
@@ -186,7 +188,7 @@ export default defineComponent({
       if (this.selectedProvince && this.selectedProvince.name === term) {
         return
       }
-      const rdata = await ky.get('/api/p/search/', {
+      const rdata = await ky.get(`${BASE_API_URL}/p/search/`, {
         searchParams: { q: markRequireAll(term) }
       }).json()
       this.filteredProvinces = mask(rdata, array(ProvinceSchema))
@@ -196,7 +198,7 @@ export default defineComponent({
       if (this.selectedDistrict && this.selectedDistrict.name === term) {
         return
       }
-      const rdata = await ky.get('/api/d/search/', {
+      const rdata = await ky.get(`${BASE_API_URL}/d/search/`, {
         searchParams: { q: markRequireAll(term), p: provinceCode }
       }).json()
       this.filteredDistricts = mask(rdata, array(DistrictShema))
@@ -206,7 +208,7 @@ export default defineComponent({
       if (this.selectedWard && this.selectedWard.name === term) {
         return
       }
-      const rdata = await ky.get('/api/w/search/', {
+      const rdata = await ky.get(`${BASE_API_URL}/w/search/`, {
         searchParams: { q: markRequireAll(term), d: districtCode }
       }).json()
       this.filteredWards = mask(rdata, array(WardSchema))
