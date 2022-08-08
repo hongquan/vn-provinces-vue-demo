@@ -1,6 +1,6 @@
 {
   "name": "vn-provinces-vue-demo",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
@@ -8,20 +8,20 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "ky": "^0.28.6",
-    "superstruct": "^0.15.3",
-    "ts-debounce": "^3.0.0",
-    "vue": "^3.2.16",
-    "vue3-click-away": "^1.2.1"
+    "ky": "^0.31.1",
+    "superstruct": "^0.16.0",
+    "ts-debounce": "^4.0.0",
+    "vue": "^3.2.37",
+    "vue3-click-away": "^1.2.4"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.4.1",
-    "@vitejs/plugin-vue": "^1.9.3",
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.3.11",
-    "tailwindcss": "^2.2.17",
-    "typescript": "^4.4.3",
-    "vite": "^2.6.4",
-    "vue-tsc": "^0.3.0"
+    "@tailwindcss/typography": "^0.5.4",
+    "@vitejs/plugin-vue": "^3.0.1",
+    "autoprefixer": "^10.4.7",
+    "postcss": "^8.4.14",
+    "tailwindcss": "^3.1.6",
+    "typescript": "^4.7.4",
+    "vite": "^3.0.3",
+    "vue-tsc": "^0.39.0"
   }
 }
